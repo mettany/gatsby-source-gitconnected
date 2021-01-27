@@ -1,14 +1,31 @@
-/**
- * Implement Gatsby's Node APIs in this file.
- *
- * See: https://www.gatsbyjs.com/docs/node-apis/
- */
-// You can delete this file if you're not using it
+const axios = require("axios");
 
-/**
- * You can uncomment the following line to verify that
- * your plugin is being loaded in your site.
- *
- * See: https://www.gatsbyjs.com/docs/creating-a-local-plugin/#developing-a-local-plugin-that-is-outside-your-project
- */
-exports.onPreInit = () => console.log("Loaded gatsby-starter-plugin")
+exports.sourceNodes = async ({ actions, createContentDigest, createNodeId }, pluginOptions) => {
+  const { createNode } = actions;
+
+  if(!pluginOptions.username) {
+    console.error("Username is mandatory in plugin options");
+    return
+  }
+
+  const path = `https://gitconnected.com/v1/portfolio/${pluginOptions.username}`;
+
+  try {
+    const {data} = await axios.get(path);
+    createNode({
+      ...data,
+      id: createNodeId(`PORTFOLIO-${pluginOptions.username}`),
+      parent: null,
+      children: [],
+      internal: {
+        type: "PORTFOLIO",
+        content: JSON.stringify(data),
+        contentDigest: createContentDigest(JSON.stringify(data)),
+      },
+    });
+    return;
+  } catch (err) {
+    console.error(err);
+    return;
+  }
+};
