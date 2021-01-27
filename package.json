@@ -1,5 +1,5 @@
 {
-  "name": "gitconnected-source-plugin",
+  "name": "gatsby-source-gitconnected",
   "version": "1.0.0",
   "description": "A source plugin for fetch data on gitconnected API",
   "main": "index.js",
